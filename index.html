@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ff6688">
+  <title>یه قرار قشنگ؟ 💌</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(145deg,#fff0f5,#ffe0e9 48%,#fff7fb);color:#462333;display:grid;place-items:center;padding:20px}
+    .card{width:min(100%,520px);background:#ffffffd9;border:1px solid #fff;border-radius:28px;padding:28px 22px;box-shadow:0 18px 60px #a52d5320;text-align:center}
+    .heart{font-size:54px;animation:beat 1.3s infinite}
+    @keyframes beat{50%{transform:scale(1.12)}}
+    h1{font-size:clamp(25px,6vw,34px);margin:8px 0 12px}
+    .sub{line-height:2;color:#765464;margin:0 auto 22px;max-width:390px}
+    .buttons{display:flex;justify-content:center;gap:12px;position:relative;min-height:58px;margin:18px 0 24px}
+    button{border:0;border-radius:16px;padding:14px 25px;font-size:16px;font-weight:bold;cursor:pointer;transition:transform .15s}
+    button:active{transform:scale(.97)}
+    .yes{background:#ff5f89;color:white;box-shadow:0 8px 20px #ff5f8938}
+    .no{background:#f2e8ed;color:#68495a;position:relative}
+    .form{display:none;text-align:right;background:#fff7fa;border-radius:20px;padding:18px;margin-top:12px}
+    label{display:block;font-size:14px;margin:13px 0 7px;font-weight:bold}
+    input,select{width:100%;border:1px solid #f0c9d6;border-radius:12px;padding:13px;font:inherit;background:white;color:#462333}
+    .send{width:100%;margin-top:18px;background:#462333;color:white}
+    .notice{font-size:12px;line-height:1.8;color:#886a79;margin:14px 0 0}
+    .status{display:none;margin-top:15px;padding:12px;border-radius:12px;line-height:1.8;font-size:14px}
+    .status.ok{display:block;background:#e8fff2;color:#17663b}
+    .status.err{display:block;background:#fff0f0;color:#9b2525}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="heart">💌</div>
+    <h1>یه قرار قشنگ با من میای؟</h1>
+    <p class="sub">قول می‌دم یه خاطره‌ی خوب بسازیم 😊<br>پایین رو انتخاب کن...</p>
+    <div class="buttons" id="buttons">
+      <button class="yes" id="yesBtn" type="button">آره، چرا که نه ❤️</button>
+      <button class="no" id="noBtn" type="button">نه 🙈</button>
+    </div>
+
+    <form class="form" id="inviteForm">
+      <h3 style="margin-top:0;text-align:center">پس قرارمون رو تنظیم کنیم ✨</h3>
+      <label for="date">چه روزی؟</label>
+      <input id="date" name="date" type="date" required>
+      <label for="time">چه ساعتی؟</label>
+      <input id="time" name="time" type="time" required>
+      <label for="place">کجا بریم؟</label>
+      <select id="place" name="place" required>
+        <option value="">انتخاب کن...</option>
+        <option>کافه ☕</option>
+        <option>رستوران 🍝</option>
+        <option>سینما 🎬</option>
+        <option>یه دور دور 🚗</option>
+        <option>هرجا تو بگی 💗</option>
+      </select>
+      <label for="note">اسم یا یه پیام کوتاه (اختیاری)</label>
+      <input id="note" name="note" maxlength="120" placeholder="مثلاً: منتظرتم 😊">
+      <p class="notice">با زدن دکمه‌ی ارسال، انتخاب‌های بالا برای سازنده‌ی این دعوت در تلگرام فرستاده می‌شود.</p>
+      <button class="send" type="submit" id="sendBtn">ارسال انتخاب‌ها 💌</button>
+      <div class="status" id="status" role="status"></div>
+    </form>
+    <p class="notice">ساخته‌شده با کمی ذوق و کلی قلب ❤️</p>
+  </main>
+<script>
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const form = document.getElementById('inviteForm');
+  const statusBox = document.getElementById('status');
+  const dateInput = document.getElementById('date');
+  const today = new Date();
+  const localToday = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  dateInput.min = localToday;
+
+  yesBtn.addEventListener('click', () => {
+    form.style.display = 'block';
+    form.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+  function runAway(){
+    const card = document.querySelector('.card').getBoundingClientRect();
+    const maxX = Math.max(0, Math.min(130, window.innerWidth/2 - 90));
+    const maxY = 45;
+    const x = (Math.random() * 2 - 1) * maxX;
+    const y = (Math.random() * 2 - 1) * maxY;
+    noBtn.style.transform = `translate(${x}px, ${y}px)`;
+  }
+  noBtn.addEventListener('pointerenter', runAway);
+  noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); runAway(); }, {passive:false});
+  noBtn.addEventListener('click', runAway);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusBox.className = 'status';
+    statusBox.style.display = 'none';
+    const data = {
+      date: document.getElementById('date').value,
+      time: document.getElementById('time').value,
+      place: document.getElementById('place').value,
+      note: document.getElementById('note').value.trim()
+    };
+    const sendBtn = document.getElementById('sendBtn');
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'در حال ارسال...';
+    try {
+      const res = await fetch('/.netlify/functions/send-invite', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(result.error || 'ارسال انجام نشد');
+      statusBox.textContent = 'رسید! انتخاب‌هات فرستاده شد ❤️';
+      statusBox.className = 'status ok';
+      statusBox.style.display = 'block';
+      form.reset();
+    } catch(err) {
+      statusBox.textContent = 'ارسال انجام نشد. احتمالاً سایت هنوز به ربات تلگرام وصل نشده؛ بعداً دوباره امتحان کن.';
+      statusBox.className = 'status err';
+      statusBox.style.display = 'block';
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'ارسال انتخاب‌ها 💌';
+    }
+  });
+</script>
+</body>
+</html>
